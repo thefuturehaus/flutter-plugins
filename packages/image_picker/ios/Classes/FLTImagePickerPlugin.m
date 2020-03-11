@@ -112,6 +112,25 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
+- (UIViewController*)topViewController {
+    UIViewController *topViewController =  _viewController;
+    while (true)
+    {
+        if (topViewController.presentedViewController) {
+            topViewController = topViewController.presentedViewController;
+        } else if ([topViewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *nav = (UINavigationController *)topViewController;
+            topViewController = nav.topViewController;
+        } else if ([topViewController isKindOfClass:[UITabBarController class]]) {
+            UITabBarController *tab = (UITabBarController *)topViewController;
+            topViewController = tab.selectedViewController;
+        } else {
+            break;
+        }
+    }
+    return topViewController;
+}
+
 - (void)showCamera {
   @synchronized(self) {
     if (_imagePickerController.beingPresented) {
@@ -121,7 +140,7 @@ static const int SOURCE_GALLERY = 1;
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+    [self.topViewController presentViewController:_imagePickerController animated:YES completion:nil];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Camera not available."
@@ -226,7 +245,7 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  [self.topViewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
