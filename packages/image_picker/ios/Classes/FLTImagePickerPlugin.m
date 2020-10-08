@@ -114,6 +114,12 @@ static const int SOURCE_GALLERY = 1;
 
 - (UIViewController*)topViewController {
     UIViewController *topViewController =  _viewController;
+    UIViewController *rootViewController = [[[UIApplication sharedApplication].delegate window] rootViewController];
+
+    if ([rootViewController isKindOfClass: [FlutterViewController class]]) {
+        return rootViewController;
+    }
+    
     while (true)
     {
         if (topViewController.presentedViewController) {
